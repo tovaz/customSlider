@@ -1,5 +1,6 @@
 package slider.control;
 
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +76,7 @@ public class CircularSliderSkin extends SkinBase<CircularSlider> {
     private Timeline barTooltipAnimation, mouseTooltipAnimation;
     private long barTooltipFadeInLength = 500, barTooltipFadeOutLength = 300, mouseTooltipFadeInLength = 50, mouseTooltipFadeOutLength = 500;
 
-    private TextField tvalor;
+    private TextField valueText;
 
     public CircularSliderSkin(CircularSlider control) {
         super(control);
@@ -117,20 +118,20 @@ public class CircularSliderSkin extends SkinBase<CircularSlider> {
         getChildren().add(styledBarBox);
     
         // ************************** AGREGANDO EL TEXTFIELD EN EL CENTRO
-        tvalor = new TextField();
-        tvalor.setText(String.valueOf( (int)getSkinnable().getValue()));
+        valueText = new TextField();
+        valueText.setText(String.valueOf( (int)getSkinnable().getValue()));
         AnchorPane panel = new AnchorPane();
         panel.setPrefWidth(styledBarBox.getWidth());
         panel.setPrefHeight(styledBarBox.getHeight());
         
         
-        tvalor.setPrefSize((getSkinnable().getPrefWidth()/2)-15, 30);
-        tvalor.setLayoutX( (getSkinnable().getPrefWidth()/2) - (tvalor.getPrefWidth()/2) );
-        tvalor.setLayoutY( (getSkinnable().getPrefHeight()/2) - (tvalor.getPrefHeight()/2) );
+        valueText.setPrefSize((getSkinnable().getPrefWidth()/2)-20, 30);
+        valueText.setLayoutX( (getSkinnable().getPrefWidth()/2) - (valueText.getPrefWidth()/2) );
+        valueText.setLayoutY( (getSkinnable().getPrefHeight()/2) - (valueText.getPrefHeight()/2) );
         
-        tvalor.getStyleClass().add("bar");
-        
-        panel.getChildren().add(tvalor);
+        valueText.getStyleClass().add("bar");
+        valueText.setVisible(getSkinnable().isTextfieldVisible());
+        panel.getChildren().add(valueText);
         getChildren().add(panel);
         
         // ************************** 
@@ -140,7 +141,7 @@ public class CircularSliderSkin extends SkinBase<CircularSlider> {
             @Override
             public Object queryAccessibleAttribute(AccessibleAttribute attribute, Object... parameters) {
                 switch (attribute) {
-                    case VALUE: { tvalor.setText( String.valueOf( getSkinnable().getValue()) ); return getSkinnable().getValue(); }
+                    case VALUE: { valueText.setText( String.valueOf( getSkinnable().getValue()) ); return getSkinnable().getValue(); }
                     default: return super.queryAccessibleAttribute(attribute, parameters);
         } } };
         cssThumb.setVisible(false);
@@ -155,7 +156,7 @@ public class CircularSliderSkin extends SkinBase<CircularSlider> {
             @Override
             public Object queryAccessibleAttribute(AccessibleAttribute attribute, Object... parameters) {
                 switch (attribute) {
-                    case VALUE: { tvalor.setText( String.valueOf( getSkinnable().getValue()) ); return getSkinnable().getValue(); }
+                    case VALUE: { valueText.setText( String.valueOf( getSkinnable().getValue()) ); return getSkinnable().getValue(); }
                     default: return super.queryAccessibleAttribute(attribute, parameters);
                 }
             }
@@ -203,6 +204,8 @@ public class CircularSliderSkin extends SkinBase<CircularSlider> {
 
         control.minorTickVisibleProperty().addListener(e -> updateTickVisibility());
         control.tickMarkVisibleProperty().addListener(e -> updateTickVisibility());
+        
+        control.TextfieldVisibleProperty().addListener( e -> updateTextfieldVisibility());
 
         styledBarBox.backgroundProperty().addListener(e -> updateBarStyle());
 
@@ -229,21 +232,21 @@ public class CircularSliderSkin extends SkinBase<CircularSlider> {
             mouseClick = false;
             if(onBar) {
                 getSkinnable().setValue((int)getValueAt(e.getX(), e.getY()));
-                tvalor.setText( String.valueOf( (int)getSkinnable().getValue() ) );
+                valueText.setText( String.valueOf( (int)getSkinnable().getValue() ) );
                 showTooltipAtPos(barTooltip, getSkinnable().getValue());
             }
         });
         
-        tvalor.setOnKeyReleased(e -> {
-            if (!tvalor.getText().isEmpty()) {
-                int valor = Integer.parseInt( tvalor.getText() );
+        valueText.setOnKeyReleased(e -> {
+            if (!valueText.getText().isEmpty()) {
+                int valor = Integer.parseInt( valueText.getText() );
                 if ( valor >= 0) {
                     getSkinnable().setValue( valor );
                     showTooltipAtPos(barTooltip, getSkinnable().getValue());
                 }
                 else{
                     valor = 0;
-                    tvalor.setText("0");
+                    valueText.setText("0");
                     getSkinnable().setValue( valor );
                     showTooltipAtPos(barTooltip, getSkinnable().getValue());
                 }
@@ -299,7 +302,7 @@ public class CircularSliderSkin extends SkinBase<CircularSlider> {
         
         if (mouseClick){
             getSkinnable().setValue((int)getValueAt(e.getX(), e.getY()));
-            tvalor.setText( String.valueOf( (int)getSkinnable().getValue() ) );
+            valueText.setText( String.valueOf( (int)getSkinnable().getValue() ) );
             showTooltipAtPos(barTooltip, getSkinnable().getValue());
         }
 
@@ -373,6 +376,10 @@ public class CircularSliderSkin extends SkinBase<CircularSlider> {
         }
     }
 
+    private void updateTextfieldVisibility() {
+        valueText.setVisible(getSkinnable().isTextfieldVisible());
+    }
+    
     private void updateTickVisibility() {
         boolean mjv = getSkinnable().isShowTickMarks();
         boolean mnv = getSkinnable().isMinorTickVisible();

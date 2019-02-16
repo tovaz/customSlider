@@ -101,6 +101,32 @@ public class CircularSlider extends Slider {
             return StyleableProperties.MINOR_TICK_VISIBLE;
         }
     };
+    
+    //************************************************** START TEXTFIELD PROPERTIES
+    public final boolean isTextfieldVisible() { return TextfieldVisible.get(); }
+    public final void setTextfieldVisible(boolean value) { TextfieldVisible.set(value); }
+    public final BooleanProperty TextfieldVisibleProperty() { return TextfieldVisible; }
+    /** true show value on textfield */
+    private BooleanProperty TextfieldVisible = new StyleableBooleanProperty(true) {
+        @Override
+        public Object getBean() {
+            return CircularSlider.this;
+        }
+
+        @Override
+        public String getName() {
+            return "Show Textfield";
+        }
+
+        @Override
+        public CssMetaData<CircularSlider,Boolean> getCssMetaData() {
+            return StyleableProperties.SHOW_TEXTFIELD;
+        }
+    };
+    
+    
+    
+    //************************************************* END TEXTFIELD PROPERTIES
     public final boolean isMinorTickVisible() { return minorTickVisible.get(); }
     public final void setMinorTickVisible(boolean value) { minorTickVisible.set(value); }
     public final BooleanProperty minorTickVisibleProperty() { return minorTickVisible; }
@@ -121,6 +147,7 @@ public class CircularSlider extends Slider {
             return "tickMarkVisible";
         }
     };
+    
     public final boolean isTickMarkVisible() { return tickMarkVisible.get(); }
     public final void setTickMarkVisible(boolean value) { tickMarkVisible.set(value); }
     public final BooleanProperty tickMarkVisibleProperty() { return tickMarkVisible; }
@@ -265,6 +292,22 @@ public class CircularSlider extends Slider {
                 return (StyleableProperty<Boolean>)(WritableValue<Boolean>)n.minorTickVisibleProperty();
             }
         };
+         
+        
+        private static final CssMetaData<CircularSlider,Boolean> SHOW_TEXTFIELD =
+            new CssMetaData<CircularSlider,Boolean>("-fx-minor-tick-visible",
+                 BooleanConverter.getInstance(), Boolean.TRUE) {
+
+            @Override
+            public boolean isSettable(CircularSlider n) {
+                return n.TextfieldVisible == null || !n.TextfieldVisible.isBound();
+            }
+
+            @Override
+            public StyleableProperty<Boolean> getStyleableProperty(CircularSlider n) {
+                return (StyleableProperty<Boolean>)(WritableValue<Boolean>)n.minorTickVisibleProperty();
+            }
+        }; 
 
         private static final CssMetaData<CircularSlider,Boolean> TICK_MARK_VISIBLE =
             new CssMetaData<CircularSlider,Boolean>("-fx-tick-mark-visible",
